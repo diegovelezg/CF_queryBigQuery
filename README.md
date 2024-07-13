@@ -41,3 +41,46 @@ Esta Cloud Function en Python permite realizar consultas a BigQuery basadas en p
        --trigger-http \
        --allow-unauthenticated \
        --entry-point query_bigquery
+   ```
+   
+## Ejemplos
+### Ejemplos de JSON de Solicitud
+Para un campo de filtro de tipo STRING:
+```
+{
+    "your_dataset.your_table": "my_dataset.my_table",
+    "fields": ["field1", "field2", "field3"],
+    "filter_field": "field1",
+    "filter_value": "some_value",
+    "filter_value_data_type": "STRING"
+}
+```
+Para un campo de filtro de tipo INT64:
+```
+{
+    "your_dataset.your_table": "my_dataset.my_table",
+    "fields": ["field1", "field2", "field3"],
+    "filter_field": "field1",
+    "filter_value": 12345,
+    "filter_value_data_type": "INT64"
+}
+```
+
+### Respuesta
+```
+{
+    "status": "success",
+    "data": [
+        {
+            "field1": "value1",
+            "field2": "value2",
+            "field3": "value3"
+        },
+        ...
+    ]
+}
+```
+
+## Adicionales
+Faltaría implementar una simple autenticación. Es un prototipo.
+
