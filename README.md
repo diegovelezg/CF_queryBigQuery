@@ -81,6 +81,68 @@ Para un campo de filtro de tipo INT64:
 }
 ```
 
-## Adicionales
-Faltaría implementar una simple autenticación. Es un prototipo.
+## Autenticación
+### Crear una API Key en Google Cloud Console:
+- Navega a API & Services > Credentials.
+- Crea una nueva API Key y guárdala.
 
+### Configurar y Desplegar el API Gateway
+Crear el archivo api-config.yaml:
+
+```
+swagger: "2.0"
+info:
+  title: "Query BigQuery API"
+  description: "API for querying BigQuery via Cloud Function"
+  version: "1.0.0"
+paths:
+  /queryBigQuery:
+    post:
+      summary: "Invoke Cloud Function"
+      operationId: queryBigQuery
+      x-google-backend:
+        address: https://.........   cloudfunctions.net/queryBigQuery
+      responses:
+        '200':
+          description: "A successful response"
+      security:
+        - api_key: []
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+```
+
+### Crear la Configuración del API:
+```
+gcloud api-gateway api-configs create querybigqueryapi-config \
+    --api=querybigqueryapi \
+    --openapi-spec=api-config.yaml \
+    --project=xxx
+```
+
+### Crear el Gateway:
+```
+gcloud api-gateway gateways create querybigqueryapi-gateway \
+    --api=querybigqueryapi \
+    --api-config=querybigqueryapi-config \
+    --location=us-central1 \
+    --project=xxx
+```
+
+### Obtener la url 
+```
+gcloud api-gateway gateways describe querybigqueryapi-gateway \
+    --location=us-central1 \
+    --project=laboratoria-prologue
+```
+
+https://[defaultHostname]/queryBigQuery
+
+Configurar la Solicitud en Postman:
+Método HTTP: POST
+URL: https://[defaultHostname]/queryBigQuery
+Encabezados:
+Content-Type: application/json
+Authorization: YOUR_API_KEY
